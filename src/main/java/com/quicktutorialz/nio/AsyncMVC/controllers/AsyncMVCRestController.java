@@ -3,6 +3,7 @@ package com.quicktutorialz.nio.AsyncMVC.controllers;
 import com.quicktutorialz.nio.AsyncMVC.models.Payment;
 import com.quicktutorialz.nio.AsyncMVC.models.PaymentDTO;
 import com.quicktutorialz.nio.AsyncMVC.services.PaymentService;
+import io.reactivex.Observable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.CompletableFuture;
@@ -30,5 +31,23 @@ public class AsyncMVCRestController {
                 .thenApplyAsync(payment -> paymentService.saveInDB(payment));
     }
 
+    /* this example convert an Rx Observable to a Completable Future */
+    @PostMapping("/save/observable")
+    public CompletableFuture<Payment> savePaymentObservable(@RequestBody PaymentDTO paymentDTO){
+
+        return fromSingleObservable( Observable.fromCallable(()-> paymentService.createPaymentFromDTO(paymentDTO))
+                                               .map(payment -> paymentService.saveInDB(payment))   );
+
+    }
+
+
+    /* function to transform observable into completable future  */
+    public static <T> CompletableFuture<T> fromSingleObservable(Observable<T> observable) {
+        final CompletableFuture<T> future = new CompletableFuture<>();
+        observable
+                .doOnError(future::completeExceptionally)
+                .forEach(future::complete);
+        return future;
+    }
 
 }
