@@ -17,6 +17,11 @@ public class AsyncMVCRestController {
     private PaymentService paymentService;
 
 
+    @GetMapping(value = "/status")
+    public String healthCheck(){
+        return "{ \"status\" : \"ok\" }";
+    }
+
     @PostMapping(value = "/save")
     public Payment savePayment(@RequestBody PaymentDTO paymentDTO){
         Payment payment = paymentService.createPaymentFromDTO(paymentDTO);
