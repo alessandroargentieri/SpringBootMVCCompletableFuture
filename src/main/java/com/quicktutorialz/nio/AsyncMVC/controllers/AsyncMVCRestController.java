@@ -22,6 +22,12 @@ public class AsyncMVCRestController {
         return "{ \"status\" : \"ok\" }";
     }
 
+
+    @GetMapping(value = "/error")
+    public String error(){
+        return "{ \"status\" : \"error\" }";
+    }
+
     @PostMapping(value = "/save")
     public Payment savePayment(@RequestBody PaymentDTO paymentDTO){
         Payment payment = paymentService.createPaymentFromDTO(paymentDTO);
